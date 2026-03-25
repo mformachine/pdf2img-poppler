@@ -14,6 +14,8 @@ const PORT = process.env.PORT || 5000;
 const MEDIA_DIR = path.join(__dirname, 'media');
 const TMP_DIR = process.env.TMP_DIR || '/tmp';
 const MAX_FILE_SIZE_MB = Number(process.env.MAX_FILE_SIZE_MB || 50);
+const MEDIA_TTL_MINUTES = Number(process.env.MEDIA_TTL_MINUTES || 60);
+const CLEANUP_INTERVAL_MINUTES = Number(process.env.CLEANUP_INTERVAL_MINUTES || 60);
 
 const upload = multer({
   dest: TMP_DIR,
@@ -105,6 +107,42 @@ function buildImageResponse(outId, files) {
   return {
     images: files.map((name) => `/media/${outId}/${name}`),
   };
+}
+
+async function cleanupExpiredMedia() {
+  const ttlMs = MEDIA_TTL_MINUTES * 60 * 1000;
+  const now = Date.now();
+
+  try {
+    const entries = await fsp.readdir(MEDIA_DIR, { withFileTypes: true });
+
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+
+      const dirPath = path.join(MEDIA_DIR, entry.name);
+
+      try {
+        const stats = await fsp.stat(dirPath);
+        const ageMs = now - stats.mtimeMs;
+
+        if (ageMs > ttlMs) {
+          await removeDirQuietly(dirPath);
+        }
+      } catch {}
+    }
+  } catch (err) {
+    console.error('media cleanup failed:', err.message);
+  }
+}
+
+function startMediaCleanupJob() {
+  const intervalMs = CLEANUP_INTERVAL_MINUTES * 60 * 1000;
+
+  cleanupExpiredMedia();
+
+  setInterval(() => {
+    cleanupExpiredMedia();
+  }, intervalMs);
 }
 
 async function runImageCommand(command, req, res, options = {}) {
@@ -238,6 +276,8 @@ app.use((err, _req, res, _next) => {
     message: err.message || 'internal server error',
   });
 });
+
+startMediaCleanupJob();
 
 app.listen(PORT, () => {
   console.log(`PDF service (Poppler) running on port ${PORT}`);
