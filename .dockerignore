@@ -1,4 +1,8 @@
 node_modules
 media
 .git
+.gitignore
+Dockerfile
+docker-compose.yml
+*.log
 .env
