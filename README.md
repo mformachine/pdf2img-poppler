@@ -116,16 +116,6 @@ curl -X POST http://localhost:5000/pdfinfo \
   -F "file=@/path/to/file.pdf"
 ```
 
-## n8n flow
-
-Typical image conversion flow:
-
-1. `POST` the PDF to `/pdftocairo` or `/pdftoppm`
-2. read the returned `images` array
-3. `GET` each `/media/...` URL
-
-This matches the original workflow and keeps integration simple.
-
 ## Data lifecycle and cleanup
 
 - uploaded PDFs are stored temporarily and deleted after processing
