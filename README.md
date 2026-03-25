@@ -150,7 +150,7 @@ docker run --rm -p 5000:5000 \
 ## Build locally
 
 ```bash
-docker build -t mformachine/poppler .
+docker build -t mformachine/poppler
 ```
 
 Run locally:
