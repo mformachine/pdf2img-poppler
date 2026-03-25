@@ -7,7 +7,7 @@ RUN apt-get update && \
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 
 COPY app.js ./
 RUN mkdir -p /app/media && chown -R node:node /app
