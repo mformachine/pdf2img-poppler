@@ -27,7 +27,7 @@ const upload = multer({
 fs.mkdirSync(MEDIA_DIR, { recursive: true });
 
 app.get('/', (_req, res) => {
-  res.send('Welcome to chanmo/poppler');
+  res.send('Welcome to poppler');
 });
 
 app.get('/healthz', (_req, res) => {
