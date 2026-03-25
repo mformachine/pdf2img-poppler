@@ -175,21 +175,6 @@ docker run --rm -p 5000:5000 mformachine/poppler
 docker compose up --build
 ```
 
-## Publish flow
-
-This repo includes a GitHub Actions workflow that automatically builds and publishes the Docker image to Docker Hub on every push to `main`, and also publishes version tags.
-
-Expected Docker Hub repository:
-
-```text
-mformachine/poppler
-```
-
-Required GitHub repository secrets:
-
-- `DOCKERHUB_USERNAME`
-- `DOCKERHUB_TOKEN`
-
 ## License
 
 MIT
